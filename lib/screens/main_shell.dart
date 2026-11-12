@@ -32,19 +32,19 @@ class MainShell extends StatelessWidget {
             destinations: const [
               NavigationDestination(
                   icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded, color: Color(0xFFE5383B)),
+                  selectedIcon: Icon(Icons.home_rounded, color: Color(0xFFCA4E3D)),
                   label: 'Home'),
               NavigationDestination(
                   icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long_rounded, color: Color(0xFFE5383B)),
+                  selectedIcon: Icon(Icons.receipt_long_rounded, color: Color(0xFFCA4E3D)),
                   label: 'Trips'),
               NavigationDestination(
                   icon: Icon(Icons.calendar_month_outlined),
-                  selectedIcon: Icon(Icons.calendar_month_rounded, color: Color(0xFFE5383B)),
+                  selectedIcon: Icon(Icons.calendar_month_rounded, color: Color(0xFFCA4E3D)),
                   label: 'Plans'),
               NavigationDestination(
                   icon: Icon(Icons.shield_outlined),
-                  selectedIcon: Icon(Icons.shield_rounded, color: Color(0xFFE5383B)),
+                  selectedIcon: Icon(Icons.shield_rounded, color: Color(0xFFCA4E3D)),
                   label: 'Safety'),
             ],
           ),

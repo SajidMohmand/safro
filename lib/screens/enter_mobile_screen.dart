@@ -76,6 +76,7 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.creamBg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
@@ -93,41 +94,58 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
                   Text('Enter your\nmobile number', style: ts(36, w: FontWeight.w800, h: 1.15, ls: -.5)),
                   const SizedBox(height: 34),
                   Container(
-                    height: 70,
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    height: 68,
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.line, width: 1.6),
                       borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.line, width: 1.5),
                     ),
+                    clipBehavior: Clip.antiAlias,
                     child: Row(children: [
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _code,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          style: ts(20, w: FontWeight.w700),
-                          items: _codes.entries
-                              .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-                              .toList(),
-                          onChanged: (v) => setState(() => _code = v ?? '+92'),
+                      Container(
+                        height: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        color: AppColors.lilacBg,
+                        child: Center(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _code,
+                              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                              style: ts(20, w: FontWeight.w700),
+                              dropdownColor: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              items: _codes.entries
+                                  .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+                                  .toList(),
+                              onChanged: (v) => setState(() => _code = v ?? '+92'),
+                            ),
+                          ),
                         ),
                       ),
-                      Container(width: 1.5, height: 32, color: AppColors.line, margin: const EdgeInsets.symmetric(horizontal: 12)),
                       Expanded(
-                        child: TextField(
-                          controller: _ctrl,
-                          autofocus: true,
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(12),
-                          ],
-                          onChanged: (_) => setState(() {}),
-                          style: ts(28, w: FontWeight.w700, ls: 1.5),
-                          cursorColor: AppColors.red,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: '3001212211',
-                            hintStyle: ts(28, w: FontWeight.w600, c: const Color(0xFFD1D5DB), ls: 1.5),
+                        child: Container(
+                          height: double.infinity,
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Center(
+                            child: TextField(
+                              controller: _ctrl,
+                              autofocus: true,
+                              keyboardType: TextInputType.phone,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(12),
+                              ],
+                              onChanged: (_) => setState(() {}),
+                              style: ts(28, w: FontWeight.w700, ls: 1.5),
+                              cursorColor: AppColors.red,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: '3001212211',
+                                hintStyle: ts(28, w: FontWeight.w600, c: const Color(0xFFD1D5DB), ls: 1.5),
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
                           ),
                         ),
                       ),

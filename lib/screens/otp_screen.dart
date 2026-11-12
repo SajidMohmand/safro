@@ -109,11 +109,19 @@ class _OtpScreenState extends State<OtpScreen> {
       height: 74,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: filled ? AppColors.redSoft : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: active ? AppColors.red : (filled ? AppColors.red.withOpacity(.4) : AppColors.line), width: active ? 2.2 : 1.6),
+        border: Border.all(
+          color: active
+              ? AppColors.verifyRed
+              : (filled ? AppColors.verifyRed.withOpacity(.5) : AppColors.line),
+          width: active ? 2.2 : 1.6,
+        ),
       ),
-      child: Text(filled ? _code[i] : '', style: ts(_len <= 4 ? 36 : 28, w: FontWeight.w800)),
+      child: Text(
+        filled ? _code[i] : '',
+        style: ts(_len <= 4 ? 36 : 28, w: FontWeight.w800, c: AppColors.numberDark),
+      ),
     );
   }
 
@@ -125,8 +133,8 @@ class _OtpScreenState extends State<OtpScreen> {
             height: 58,
             child: Center(
               child: icon != null
-                  ? Icon(icon, size: 28, color: AppColors.ink)
-                  : Text(label, style: ts(28, w: FontWeight.w600)),
+                  ? Icon(icon, size: 28, color: AppColors.numberDark)
+                  : Text(label, style: ts(28, w: FontWeight.w600, c: AppColors.numberDark)),
             ),
           ),
         ),
@@ -143,6 +151,7 @@ class _OtpScreenState extends State<OtpScreen> {
       ['7', '8', '9'],
     ];
     return Scaffold(
+      backgroundColor: AppColors.creamBg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
@@ -150,15 +159,15 @@ class _OtpScreenState extends State<OtpScreen> {
             IconButton(
               padding: EdgeInsets.zero,
               alignment: Alignment.centerLeft,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24, color: AppColors.numberDark),
               onPressed: () => Navigator.of(context).pop(),
             ),
             const SizedBox(height: 10),
-            Text('Enter the code', style: ts(36, w: FontWeight.w800, ls: -.5)),
+            Text('Enter the code', style: ts(36, w: FontWeight.w800, ls: -.5, c: AppColors.numberDark)),
             const SizedBox(height: 10),
             Text.rich(TextSpan(style: ts(15, c: AppColors.grey), children: [
               const TextSpan(text: 'Sent to '),
-              TextSpan(text: widget.display, style: ts(15, w: FontWeight.w700)),
+              TextSpan(text: widget.display, style: ts(15, w: FontWeight.w700, c: AppColors.numberDark)),
             ])),
             const SizedBox(height: 28),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -170,7 +179,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ? Text('Resend code in 0:${_secs.toString().padLeft(2, '0')}', style: ts(14, c: AppColors.grey))
                   : TextButton(
                       onPressed: _resend,
-                      child: Text('Resend code', style: ts(15, w: FontWeight.w700, c: AppColors.red))),
+                      child: Text('Resend code', style: ts(15, w: FontWeight.w700, c: AppColors.verifyRed))),
             ),
             const Spacer(),
             for (final r in rows)
@@ -181,7 +190,12 @@ class _OtpScreenState extends State<OtpScreen> {
               _padKey('', icon: Icons.backspace_outlined, onTap: () => _key('del')),
             ]),
             const SizedBox(height: 14),
-            PrimaryButton(label: 'Verify', loading: _loading, onPressed: _code.length == _len ? _verify : null),
+            PrimaryButton(
+              label: 'Verify',
+              color: AppColors.verifyRed,
+              loading: _loading,
+              onPressed: _code.length == _len ? _verify : null,
+            ),
           ]),
         ),
       ),

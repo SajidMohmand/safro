@@ -44,30 +44,43 @@ class PrimaryButton extends StatelessWidget {
       );
 }
 
-/// White button with a black border (Cancel, Book again, Add Contact ...)
+/// White button with a border (Cancel, Book again, Add Contact ...)
 class BorderButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
   final Color borderColor;
-  const BorderButton(
-      {super.key, required this.label, required this.onPressed, this.borderColor = AppColors.ink});
+  final Color? textColor;
+  final double radius;
+  final double height;
+  const BorderButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.borderColor = AppColors.ink,
+    this.textColor,
+    this.radius = 16,
+    this.height = 56,
+  });
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: OutlinedButton(
-          onPressed: onPressed,
-          style: OutlinedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.ink,
-            side: BorderSide(color: borderColor, width: 1.6),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            textStyle: ts(17, w: FontWeight.w700),
-          ),
-          child: Text(label),
+  Widget build(BuildContext context) {
+    final fg = textColor ?? borderColor;
+    return SizedBox(
+      width: double.infinity,
+      height: height,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: fg,
+          side: BorderSide(color: borderColor, width: 1.6),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+          textStyle: ts(17, w: FontWeight.w700, c: fg),
         ),
-      );
+        child: Text(label, style: ts(17, w: FontWeight.w700, c: fg)),
+      ),
+    );
+  }
 }
 
 class AppCard extends StatelessWidget {
@@ -177,13 +190,17 @@ class PickupDropCard extends StatelessWidget {
   final String pickup, drop;
   final VoidCallback? onPickupTap, onDropTap;
   final bool showLabels;
+  final Color? pickupCircleColor;
+  final Color? textColor;
   const PickupDropCard(
       {super.key,
       required this.pickup,
       required this.drop,
       this.onPickupTap,
       this.onDropTap,
-      this.showLabels = false});
+      this.showLabels = false,
+      this.pickupCircleColor,
+      this.textColor});
 
   Widget _row(Widget bullet, String text, String label, VoidCallback? tap) => InkWell(
         onTap: tap,
@@ -194,7 +211,9 @@ class PickupDropCard extends StatelessWidget {
             const SizedBox(width: 14),
             Expanded(
                 child: Text(text,
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(16, w: FontWeight.w600))),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ts(16, w: FontWeight.w600, c: textColor ?? AppColors.ink))),
             if (showLabels) Text(label, style: ts(12, c: AppColors.grey)),
           ]),
         ),
@@ -209,7 +228,8 @@ class PickupDropCard extends StatelessWidget {
                   width: 14,
                   height: 14,
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle, border: Border.all(color: AppColors.ink, width: 3.2))),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: pickupCircleColor ?? AppColors.ink, width: 3.2))),
               pickup,
               'Pickup',
               onPickupTap),

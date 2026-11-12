@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../core/constants.dart';
 import '../core/theme.dart';
 import 'auth_gate.dart';
@@ -34,29 +35,50 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: FadeTransition(
-          opacity: CurvedAnimation(parent: _c, curve: Curves.easeOut),
-          child: ScaleTransition(
-            scale: Tween(begin: .9, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeOutBack)),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Container(
-                width: 104,
-                height: 104,
-                decoration: BoxDecoration(
-                  color: AppColors.red,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [BoxShadow(color: AppColors.red.withOpacity(.3), blurRadius: 28, offset: const Offset(0, 12))],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.splashBg,
+        body: Center(
+          child: FadeTransition(
+            opacity: CurvedAnimation(parent: _c, curve: Curves.easeOut),
+            child: ScaleTransition(
+              scale: Tween(begin: .9, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeOutBack)),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    color: AppColors.red,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(.3),
+                        blurRadius: 24,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.verified_user_rounded, color: Colors.white, size: 54),
+                  ),
                 ),
-                child: const Icon(Icons.verified_user_rounded, color: Colors.white, size: 58),
-              ),
-              const SizedBox(height: 26),
-              Text(AppConfig.appName, style: ts(54, w: FontWeight.w800, ls: -1.5, h: 1.1)),
-              const SizedBox(height: 8),
-              Text(AppConfig.tagline, style: ts(15, c: AppColors.grey)),
-            ]),
+                const SizedBox(height: 26),
+                Text(
+                  AppConfig.appName,
+                  style: ts(54, w: FontWeight.w800, ls: -1.5, h: 1.1, c: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  AppConfig.tagline,
+                  style: ts(15, c: Colors.white.withOpacity(.8)),
+                ),
+              ]),
+            ),
           ),
         ),
       ),

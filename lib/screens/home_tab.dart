@@ -138,9 +138,9 @@ class _HomeTabState extends State<HomeTab> {
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(.12), blurRadius: 12, offset: const Offset(0, 3))],
               ),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Avatar(widget.profile.name, size: 38),
+                Avatar(widget.profile.name, size: 38, bg: AppColors.avatarBg, fg: Colors.white),
                 const SizedBox(width: 10),
-                Text('Salaam, ${widget.profile.firstName}', style: ts(15, w: FontWeight.w700)),
+                Text('Salaam, ${widget.profile.firstName}', style: ts(15, w: FontWeight.w700, c: AppColors.avatarBg)),
               ]),
             ),
             const Spacer(),
@@ -149,7 +149,7 @@ class _HomeTabState extends State<HomeTab> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
                 decoration: BoxDecoration(
-                  color: AppColors.green,
+                  color: AppColors.safeGuardBg,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [BoxShadow(color: Colors.black.withOpacity(.12), blurRadius: 10, offset: const Offset(0, 3))],
                 ),
@@ -187,11 +187,11 @@ class _HomeTabState extends State<HomeTab> {
                   child: Container(
                     height: 56,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(16)),
+                    decoration: BoxDecoration(color: AppColors.searchBg, borderRadius: BorderRadius.circular(16)),
                     child: Row(children: [
-                      const Icon(Icons.search_rounded, size: 26),
+                      const Icon(Icons.search_rounded, size: 26, color: AppColors.avatarBg),
                       const SizedBox(width: 12),
-                      Text('Where to ?', style: ts(17, w: FontWeight.w600, c: AppColors.grey)),
+                      Text('Where to ?', style: ts(17, w: FontWeight.w600, c: const Color(0xFF7E728B))),
                     ]),
                   ),
                 ),
@@ -212,12 +212,12 @@ class _HomeTabState extends State<HomeTab> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                            border: Border.all(color: AppColors.line, width: 1.4),
+                            color: AppColors.chipBg,
                             borderRadius: BorderRadius.circular(30)),
                         child: Row(children: [
-                          Icon(c.$2, size: 20, color: AppColors.red),
+                          Icon(c.$2, size: 20, color: AppColors.navSelected),
                           const SizedBox(width: 8),
-                          Text(c.$1, style: ts(14, w: FontWeight.w600)),
+                          Text(c.$1, style: ts(14, w: FontWeight.w600, c: AppColors.avatarBg)),
                         ]),
                       ),
                     );
@@ -269,8 +269,11 @@ class _HomeTabState extends State<HomeTab> {
           Container(
             width: 48,
             height: 48,
-            decoration: BoxDecoration(color: AppColors.redSoft, borderRadius: BorderRadius.circular(14)),
-            child: const Icon(Icons.calendar_month_rounded, color: AppColors.red),
+            decoration: const BoxDecoration(
+              color: AppColors.navSelected,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(

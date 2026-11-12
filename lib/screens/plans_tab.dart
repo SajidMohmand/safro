@@ -142,7 +142,7 @@ class _PlansTabState extends State<PlansTab> {
           for (final d in _drivers)
             ListTile(
               leading: Avatar(d.name),
-              title: Text(d.name, style: ts(16, w: FontWeight.w700)),
+              title: Text(d.name, style: ts(16, w: FontWeight.w700, c: AppColors.planTextDark)),
               subtitle: Text('${d.rating} • ${d.trips} trips • ${d.car}', style: ts(12.5, c: AppColors.grey)),
               onTap: () => Navigator.pop(context, d),
             ),
@@ -173,22 +173,24 @@ class _PlansTabState extends State<PlansTab> {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
         children: [
-          Text('Meri Driver', style: ts(30, w: FontWeight.w800, ls: -.5)),
+          Text('Meri Driver', style: ts(30, w: FontWeight.w800, ls: -.5, c: AppColors.planTextDark)),
           const SizedBox(height: 18),
 
           // Fixed driver
           AppCard(
             onTap: _pickDriver,
+            color: AppColors.planCardDark,
+            borderColor: Colors.transparent,
             child: Row(children: [
-              Avatar(name, size: 54),
+              Avatar(name, size: 54, bg: Colors.white, fg: AppColors.planCardDark),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, style: ts(18, w: FontWeight.w700)),
-                  Text('Your fixed driver', style: ts(13, c: AppColors.grey)),
+                  Text(name, style: ts(18, w: FontWeight.w700, c: Colors.white)),
+                  Text('Your fixed driver', style: ts(13, c: Colors.white.withOpacity(0.75))),
                 ]),
               ),
-              if (!_active) const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.grey),
+              if (!_active) const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70),
             ]),
           ),
           const SizedBox(height: 14),
@@ -199,13 +201,15 @@ class _PlansTabState extends State<PlansTab> {
             drop: _drop.name,
             onPickupTap: () => _pickPlace(true),
             onDropTap: () => _pickPlace(false),
+            pickupCircleColor: AppColors.planCardDark,
+            textColor: AppColors.planTextDark,
           ),
           const SizedBox(height: 14),
 
           // Days + time
           AppCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Days', style: ts(15, w: FontWeight.w700)),
+              Text('Days', style: ts(15, w: FontWeight.w700, c: AppColors.planTextDark)),
               const SizedBox(height: 12),
               Row(children: [
                 for (var i = 0; i < 7; i++)
@@ -220,25 +224,29 @@ class _PlansTabState extends State<PlansTab> {
                         margin: const EdgeInsets.symmetric(horizontal: 2.5),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: _days.contains(i) ? AppColors.red : Colors.white,
+                          color: _days.contains(i) ? AppColors.planSelectedDay : AppColors.planUnselectedDay,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _days.contains(i) ? AppColors.red : AppColors.line, width: 1.4),
+                          border: Border.all(
+                              color: _days.contains(i) ? AppColors.planSelectedDay : Colors.transparent,
+                              width: 1.4),
                         ),
                         child: Text(_dayNames[i],
-                            style: ts(11.5, w: FontWeight.w700, c: _days.contains(i) ? Colors.white : AppColors.ink)),
+                            style: ts(11.5,
+                                w: FontWeight.w700,
+                                c: _days.contains(i) ? Colors.white : AppColors.planTextDark)),
                       ),
                     ),
                   ),
               ]),
               const SizedBox(height: 20),
-              Text('Pickup time', style: ts(15, w: FontWeight.w700)),
+              Text('Pickup time', style: ts(15, w: FontWeight.w700, c: AppColors.grey)),
               const SizedBox(height: 10),
               Row(children: [
                 _circleBtn(Icons.remove_rounded, () => _step(-15)),
                 Expanded(
                   child: GestureDetector(
                     onTap: _pickTime,
-                    child: Center(child: Text(time, style: ts(30, w: FontWeight.w800))),
+                    child: Center(child: Text(time, style: ts(30, w: FontWeight.w800, c: AppColors.planTextDark))),
                   ),
                 ),
                 _circleBtn(Icons.add_rounded, () => _step(15)),
@@ -250,15 +258,15 @@ class _PlansTabState extends State<PlansTab> {
           // Price
           AppCard(
             child: Row(children: [
-              Expanded(child: Text('Per month paid in\nadvance', style: ts(15, w: FontWeight.w600, h: 1.35))),
-              Text('PKR\n${money(_price)}', textAlign: TextAlign.right, style: ts(20, w: FontWeight.w800, h: 1.2)),
+              Expanded(child: Text('Per month paid in\nadvance', style: ts(15, w: FontWeight.w600, h: 1.35, c: AppColors.planTextDark))),
+              Text('PKR\n${money(_price)}', textAlign: TextAlign.right, style: ts(20, w: FontWeight.w800, h: 1.2, c: AppColors.planTextDark)),
             ]),
           ),
           const SizedBox(height: 22),
 
           PrimaryButton(
             label: _active ? 'Plan active' : 'Start plan',
-            color: _active ? AppColors.green : AppColors.red,
+            color: _active ? AppColors.planActiveBtn : AppColors.red,
             loading: _saving,
             onPressed: _driver == null ? null : _toggle,
           ),
@@ -274,7 +282,7 @@ class _PlansTabState extends State<PlansTab> {
           width: 46,
           height: 46,
           decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.line, width: 1.6)),
-          child: Icon(i, size: 24),
+          child: Icon(i, size: 24, color: AppColors.planTextDark),
         ),
       );
 }
