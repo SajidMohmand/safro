@@ -210,12 +210,18 @@ class _HomeTabState extends State<HomeTab> {
                       borderRadius: BorderRadius.circular(30),
                       onTap: () => c.$3 == null ? _openSearch() : _book(c.$3!),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.fromLTRB(6, 4, 14, 4),
                         decoration: BoxDecoration(
                             color: AppColors.chipBg,
                             borderRadius: BorderRadius.circular(30)),
                         child: Row(children: [
-                          Icon(c.$2, size: 20, color: AppColors.navSelected),
+                          SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: Center(
+                              child: Icon(c.$2, size: 18, color: Colors.black),
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Text(c.$1, style: ts(14, w: FontWeight.w600, c: AppColors.avatarBg)),
                         ]),
@@ -273,7 +279,7 @@ class _HomeTabState extends State<HomeTab> {
               color: AppColors.navSelected,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 24),
+            child: const Icon(Icons.calendar_today_outlined, color: Colors.white, size: 24),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -283,12 +289,7 @@ class _HomeTabState extends State<HomeTab> {
               Text('PKR ${money(d.monthlyPrice)} a month', style: ts(13, w: FontWeight.w700, c: AppColors.red)),
             ]),
           ),
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(color: AppColors.ink, shape: BoxShape.circle),
-            child: const Icon(Icons.navigation_rounded, color: Colors.white, size: 18),
-          ),
+          const Icon(Icons.chevron_right, size: 32, ),
         ]),
       );
 }

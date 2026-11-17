@@ -171,6 +171,7 @@ class _BookRideScreenState extends State<BookRideScreen> {
                   PickupDropCard(
                     pickup: _pickup.name,
                     drop: _drop.name,
+                    color: AppColors.pickupDropBg,
                     showLabels: true,
                     onPickupTap: () => _choose(true),
                     onDropTap: () => _choose(false),
@@ -181,23 +182,24 @@ class _BookRideScreenState extends State<BookRideScreen> {
                   _vehicleCard('AC Car', '6 min away', _fare('AC Car')),
                   const SizedBox(height: 12),
                   Row(children: [
-                    const Pill('Fixed fare', icon: Icons.lock_rounded, size: 13),
+                    const Pill('Fixed fare',
+                        icon: Icons.lock_rounded, size: 14.5, weight: FontWeight.w800),
                     const SizedBox(width: 12),
-                    const Icon(Icons.payments_outlined, size: 20, color: AppColors.grey),
-                    const SizedBox(width: 6),
-                    Text('Cash on arrival', style: ts(14, w: FontWeight.w600)),
+                    Text('Cash on arrival',
+                        style: ts(14.5, w: FontWeight.w600, c: AppColors.grey)),
                   ]),
-                  const SizedBox(height: 12),
-                  AppCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                     child: Row(children: [
-                      const Icon(Icons.ios_share_rounded, size: 24),
-                      const SizedBox(width: 12),
+                      const Icon(Icons.ios_share_rounded, size: 26),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('Family follows this trip', style: ts(14.5, w: FontWeight.w700)),
+                          Text('Family follows this trip', style: ts(16, w: FontWeight.w700)),
+                          const SizedBox(height: 2),
                           Text(_contacts.isEmpty ? 'Add contacts in Safety' : _followerNames,
-                              style: ts(12.5, c: AppColors.grey)),
+                              style: ts(13.5, c: AppColors.grey)),
                         ]),
                       ),
                       Switch.adaptive(
@@ -226,6 +228,7 @@ class _BookRideScreenState extends State<BookRideScreen> {
     final sel = _vehicle == name;
     return AppCard(
       onTap: () => setState(() => _vehicle = name),
+      color: sel ? AppColors.selectCarBg : Colors.white,
       borderColor: sel ? AppColors.red : AppColors.line,
       borderWidth: sel ? 2 : 1.3,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

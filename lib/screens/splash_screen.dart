@@ -50,11 +50,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               scale: Tween(begin: .9, end: 1.0).animate(CurvedAnimation(parent: _c, curve: Curves.easeOutBack)),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Container(
-                  width: 96,
-                  height: 96,
+                  width: 110,
+                  height: 110,
                   decoration: BoxDecoration(
                     color: AppColors.red,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(.3),
@@ -64,7 +64,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ],
                   ),
                   child: const Center(
-                    child: Icon(Icons.verified_user_rounded, color: Colors.white, size: 54),
+                    child: Icon(Icons.verified_user_outlined, color: Colors.white,
+                        size: 60),
                   ),
                 ),
                 const SizedBox(height: 26),

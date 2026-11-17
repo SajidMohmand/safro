@@ -44,6 +44,7 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
 
   bool _left = false; // already navigated away (rating / home)
   bool _sosOpen = false;
+  OverlayEntry? _toastEntry;
 
   @override
   void initState() {
@@ -59,6 +60,8 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
 
   @override
   void dispose() {
+    _toastEntry?.remove();
+    _toastEntry = null;
     _sub?.cancel();
     _anim.dispose();
     super.dispose();
@@ -154,9 +157,9 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
   }
 
   Future<void> _pinAction(TripModel t) async {
-    if (!t.pinEntered) {
-      // In simulator mode: verifies the PIN and confirms arrival
-      await Db.updateTrip(t.id, {'pinEntered': true, 'driverArrived': true});
+    if (!t.driverArrived) {
+      // In simulator mode: driver arrives and verifies PIN
+      await Db.updateTrip(t.id, {'driverArrived': true, 'pinEntered': true});
       return;
     }
     await Db.updateTrip(t.id, {
@@ -204,16 +207,28 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
   }
 
   void _topToast(String msg) {
-    final m = ScaffoldMessenger.of(context);
-    m.hideCurrentSnackBar();
-    m.showSnackBar(SnackBar(
-      content: Text(msg, style: ts(14, w: FontWeight.w600, c: Colors.white)),
-      backgroundColor: AppColors.green,
-      behavior: SnackBarBehavior.floating,
-      duration: const Duration(seconds: 4),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    ));
+    _toastEntry?.remove();
+    _toastEntry = null;
+
+    final overlay = Overlay.maybeOf(context);
+    if (overlay == null) return;
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => _TopToastWidget(
+        message: msg,
+        onDismiss: () {
+          if (_toastEntry == entry) {
+            _toastEntry = null;
+          }
+          if (entry.mounted) {
+            entry.remove();
+          }
+        },
+      ),
+    );
+    _toastEntry = entry;
+    overlay.insert(entry);
   }
 
   // ---------------- build ----------------
@@ -262,9 +277,14 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
       );
 
   Widget _sheet(String phase, List<Widget> children) {
+    final screenH = MediaQuery.of(context).size.height;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final waySize = ((494.0 + bottomInset) / screenH).clamp(0.50, 0.78);
+
     final cfg = switch (phase) {
-      'way' => (.70, .22, .78),
+      'way' => (waySize, .22, (waySize + .05).clamp(0.55, 0.82)),
       'prog' => (.34, .14, .40),
+      'found' => (.39, .14, .42),
       _ => (.38, .12, .38),
     };
     return DraggableScrollableSheet(
@@ -280,7 +300,8 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
         ),
         child: ListView(
           controller: sc,
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 18 + MediaQuery.of(context).padding.bottom),
+          padding: EdgeInsets.fromLTRB(
+              20, 10, 20, (phase == 'way' ? 32 : 18) + bottomInset),
           children: [const SheetHandle(), ...children],
         ),
       ),
@@ -308,7 +329,7 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
               padding: const EdgeInsets.all(14),
               child: Align(
                 alignment: phase == 'way' ? Alignment.topCenter : Alignment.topLeft,
-                child: phase == 'way' && t.pinEntered && d != null
+                child: phase == 'way' && (t.driverArrived || t.pinEntered) && d != null
                     ? _mapLabel('Check the plate: ${d.plate}', AppColors.ink, Icons.directions_car_rounded)
                     : (phase == 'prog' && t.followers.isNotEmpty
                         ? _mapLabel('${t.followers.join(' and ')} are following', AppColors.green, Icons.visibility_rounded)
@@ -361,43 +382,68 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
 
   // ---------- sheet: driver found ----------
   List<Widget> _found(DriverInfo d) => [
-        const Center(child: RippleIcon()),
-        Center(child: Text('Driver found', style: ts(25, w: FontWeight.w800))),
-        const SizedBox(height: 4),
-        Center(child: Text('${d.name} accepted', style: ts(14.5, c: AppColors.grey))),
-        const SizedBox(height: 18),
-        PrimaryButton(
-          label: 'View Driver on the Way',
-          onPressed: () {
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
             Db.updateTrip(widget.tripId, {
               'status': TripStatus.onTheWay,
               'driverArrived': true,
             });
           },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Center(child: RippleIcon()),
+              Center(child: Text('Driver found', style: ts(25, w: FontWeight.w800))),
+              const SizedBox(height: 4),
+              Center(child: Text('${d.name} accepted', style: ts(14.5, c: AppColors.grey))),
+            ],
+          ),
         ),
-        const SizedBox(height: 10),
-        BorderButton(label: 'Cancel', onPressed: _cancelRide),
+        const SizedBox(height: 16),
+        BorderButton(
+          label: 'Cancel',
+          onPressed: _cancelRide,
+          borderColor: const Color(0xFF271937),
+          textColor: const Color(0xFF271937),
+          fontSize: 19,
+          fontWeight: FontWeight.w800,
+          height: 56,
+          borderWidth: 1.8,
+        ),
+        const SizedBox(height: 8),
       ];
 
   // ---------- sheet: driver on the way ----------
   List<Widget> _onTheWay(TripModel t, DriverInfo d) {
-    final ready = t.pinEntered;
+    final arrived = t.driverArrived;
     return [
       Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Expanded(
           child: Text(
-            t.driverArrived ? '${d.firstName} has\narrived' : '${d.firstName} is\non the way',
+            arrived ? '${d.firstName} has\narrived' : '${d.firstName} is\non the way',
             style: ts(28, w: FontWeight.w800, h: 1.15),
           ),
         ),
-        Pill(t.driverArrived ? 'Here' : '${t.etaMin} min',
-            bg: AppColors.redSoft, fg: AppColors.red, size: 14),
+        Pill(
+          arrived ? 'Here' : '${t.etaMin} min',
+          bg: const Color(0xFFEFE9F4),
+          fg: const Color(0xFF271937),
+          size: 14,
+          weight: FontWeight.w700,
+        ),
       ]),
       const SizedBox(height: 14),
       AppCard(
         padding: const EdgeInsets.all(14),
         child: Row(children: [
-          Avatar(d.name, size: 56, border: AppColors.green),
+          Avatar(
+            d.name,
+            size: 56,
+            bg: const Color(0xFFEFE9F4),
+            fg: const Color(0xFF271937),
+            border: AppColors.green,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -407,20 +453,34 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
               const Pill('Verified today', icon: Icons.verified_rounded, size: 11.5),
             ]),
           ),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text(d.plate.replaceAll('-', ' - '), style: ts(16, w: FontWeight.w800)),
-            Text(d.car, style: ts(12.5, c: AppColors.grey)),
-          ]),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFE9F4),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  d.plate.replaceAll('-', ' - '),
+                  style: ts(15.5, w: FontWeight.w800, c: const Color(0xFF271937)),
+                ),
+                Text(d.car, style: ts(12.5, c: AppColors.grey)),
+              ],
+            ),
+          ),
         ]),
       ),
       const SizedBox(height: 12),
       AppCard(
-        color: AppColors.redSoft,
+        color: const Color(0xFFEFE9F4),
         borderColor: Colors.transparent,
         padding: const EdgeInsets.all(14),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Text('Ride PIN', style: ts(15, w: FontWeight.w800)),
+            Text('Ride PIN', style: ts(15, w: FontWeight.w800, c: const Color(0xFF271937))),
             const SizedBox(width: 8),
             Text('Tell the driver', style: ts(12.5, c: AppColors.grey)),
           ]),
@@ -429,11 +489,17 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
             for (var i = 0; i < 4; i++)
               Expanded(
                 child: Container(
-                  height: 56,
+                  height: 58,
                   margin: EdgeInsets.only(right: i == 3 ? 0 : 10),
                   alignment: Alignment.center,
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
-                  child: Text(t.pin.length > i ? t.pin[i] : '', style: ts(28, w: FontWeight.w800)),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF271937),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    t.pin.length > i ? t.pin[i] : '',
+                    style: ts(32, w: FontWeight.w900, c: Colors.white),
+                  ),
                 ),
               ),
           ]),
@@ -441,9 +507,9 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
       ),
       const SizedBox(height: 12),
       Row(children: [
-        _action(Icons.call_rounded, 'Call', () => showSnack(context, 'Calling ${d.firstName} through Safro. Your number stays hidden.')),
+        _action(Icons.call_outlined, 'Call', () => showSnack(context, 'Calling ${d.firstName} through Safro. Your number stays hidden.')),
         const SizedBox(width: 10),
-        _action(Icons.chat_bubble_rounded, 'Chat', () => _openChat(t.id)),
+        _action(Icons.chat_bubble_outline_rounded, 'Chat', () => _openChat(t.id)),
         const SizedBox(width: 10),
         _action(Icons.ios_share_rounded, 'Share', () {
           Share.share('I am riding with Safro. Driver ${d.name}, ${d.plate} (${d.car}). '
@@ -452,16 +518,10 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
       ]),
       const SizedBox(height: 14),
       PrimaryButton(
-        label: ready ? 'Start trip with PIN' : 'Driver enters PIN',
-        color: ready ? AppColors.green : AppColors.redSoft,
-        textColor: ready ? Colors.white : AppColors.red,
+        label: arrived ? 'Start trip with PIN' : 'Driver enters PIN',
+        color: arrived ? const Color(0xFF117770) : const Color(0xFFEFE9F4),
+        textColor: arrived ? Colors.white : const Color(0xFF271937),
         onPressed: () => _pinAction(t),
-      ),
-      Center(
-        child: TextButton(
-          onPressed: _cancelRide,
-          child: Text('Cancel ride', style: ts(14, w: FontWeight.w600, c: AppColors.grey)),
-        ),
       ),
     ];
   }
@@ -494,7 +554,13 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
     return [
       Row(children: [
         Expanded(child: Text(arriving ? 'Arriving' : 'On the way', style: ts(28, w: FontWeight.w800))),
-        Pill('${t.etaMin} min', bg: AppColors.redSoft, fg: AppColors.red, size: 14),
+        Pill(
+          '${t.etaMin} min',
+          bg: const Color(0xFFEFE9F4),
+          fg: const Color(0xFF271937),
+          size: 14,
+          weight: FontWeight.w700,
+        ),
       ]),
       const SizedBox(height: 14),
       TweenAnimationBuilder<double>(
@@ -510,7 +576,12 @@ class _TripScreenState extends State<TripScreen> with SingleTickerProviderStateM
       AppCard(
         padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
         child: Row(children: [
-          Avatar(d.name, size: 52),
+          Avatar(
+            d.name,
+            size: 52,
+            bg: const Color(0xFFEFE9F4),
+            fg: const Color(0xFF271937),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -639,26 +710,29 @@ class _RippleIconState extends State<RippleIcon> with SingleTickerProviderStateM
   }
 
   Widget _ring(double v) {
-    final size = 86 + v * 84;
+    final size = 78 + v * 62;
     return Opacity(
       opacity: ((1 - v) * .4).clamp(0.0, 1.0),
-      child: Container(width: size, height: size, decoration: const BoxDecoration(color: AppColors.red, shape: BoxShape.circle)),
+      child: Container(
+          width: size,
+          height: size,
+          decoration: const BoxDecoration(color: AppColors.red, shape: BoxShape.circle)),
     );
   }
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        width: 172,
-        height: 172,
+        width: 144,
+        height: 144,
         child: AnimatedBuilder(
           animation: _c,
           builder: (_, __) => Stack(alignment: Alignment.center, children: [
             for (var i = 0; i < 3; i++) _ring((_c.value + i / 3) % 1.0),
             Container(
-              width: 86,
-              height: 86,
+              width: 78,
+              height: 78,
               decoration: const BoxDecoration(color: AppColors.red, shape: BoxShape.circle),
-              child: const Icon(Icons.directions_car_filled_rounded, color: Colors.white, size: 46),
+              child: const Icon(Icons.directions_car_filled_rounded, color: Colors.white, size: 40),
             ),
           ]),
         ),
@@ -754,6 +828,104 @@ class _ChatSheetState extends State<ChatSheet> {
               ]),
             ),
           ]),
+        ),
+      );
+}
+
+class _TopToastWidget extends StatefulWidget {
+  final String message;
+  final VoidCallback onDismiss;
+  const _TopToastWidget({required this.message, required this.onDismiss});
+
+  @override
+  State<_TopToastWidget> createState() => _TopToastWidgetState();
+}
+
+class _TopToastWidgetState extends State<_TopToastWidget> with SingleTickerProviderStateMixin {
+  late final AnimationController _anim = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 320),
+  );
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _anim.forward();
+    _timer = Timer(const Duration(seconds: 4), _dismiss);
+  }
+
+  void _dismiss() {
+    _timer?.cancel();
+    if (mounted) {
+      _anim.reverse().then((_) {
+        if (mounted) widget.onDismiss();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _anim.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+        top: 0,
+        left: 0,
+        right: 0,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, -1.2),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: _anim,
+                curve: Curves.easeOutCubic,
+                reverseCurve: Curves.easeInCubic,
+              )),
+              child: FadeTransition(
+                opacity: _anim,
+                child: Material(
+                  color: Colors.transparent,
+                  child: GestureDetector(
+                    onTap: _dismiss,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2A163D),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.25),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.check_circle_rounded, color: Colors.white, size: 22),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.message,
+                              style: ts(14.5, w: FontWeight.w700, c: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       );
 }

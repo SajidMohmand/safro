@@ -39,7 +39,7 @@ class PrimaryButton extends StatelessWidget {
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(strokeWidth: 2.6, color: Colors.white))
-              : Text(label),
+              : Text(label, style: TextStyle(fontSize: 22),),
         ),
       );
 }
@@ -52,6 +52,9 @@ class BorderButton extends StatelessWidget {
   final Color? textColor;
   final double radius;
   final double height;
+  final double fontSize;
+  final FontWeight fontWeight;
+  final double borderWidth;
   const BorderButton({
     super.key,
     required this.label,
@@ -60,6 +63,9 @@ class BorderButton extends StatelessWidget {
     this.textColor,
     this.radius = 16,
     this.height = 56,
+    this.fontSize = 17,
+    this.fontWeight = FontWeight.w700,
+    this.borderWidth = 1.6,
   });
 
   @override
@@ -73,11 +79,11 @@ class BorderButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: fg,
-          side: BorderSide(color: borderColor, width: 1.6),
+          side: BorderSide(color: borderColor, width: borderWidth),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-          textStyle: ts(17, w: FontWeight.w700, c: fg),
+          textStyle: ts(fontSize, w: fontWeight, c: fg),
         ),
-        child: Text(label, style: ts(17, w: FontWeight.w700, c: fg)),
+        child: Text(label, style: ts(fontSize, w: fontWeight, c: fg)),
       ),
     );
   }
@@ -125,12 +131,14 @@ class Avatar extends StatelessWidget {
   final String name;
   final double size;
   final Color? border;
+  final double borderWidth;
   final Color bg;
   final Color fg;
   const Avatar(this.name,
       {super.key,
       this.size = 48,
       this.border,
+      this.borderWidth = 2,
       this.bg = AppColors.redSoft,
       this.fg = AppColors.red});
 
@@ -142,7 +150,7 @@ class Avatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: bg,
-          border: border == null ? null : Border.all(color: border!, width: 2),
+          border: border == null ? null : Border.all(color: border!, width: borderWidth),
         ),
         child: Text(initial(name), style: ts(size * .42, w: FontWeight.w700, c: fg)),
       );
@@ -154,12 +162,14 @@ class Pill extends StatelessWidget {
   final Color fg;
   final IconData? icon;
   final double size;
+  final FontWeight weight;
   const Pill(this.text,
       {super.key,
       this.bg = AppColors.greenSoft,
       this.fg = AppColors.green,
       this.icon,
-      this.size = 12.5});
+      this.size = 12.5,
+      this.weight = FontWeight.w600});
 
   @override
   Widget build(BuildContext context) => Container(
@@ -167,7 +177,7 @@ class Pill extends StatelessWidget {
         decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(30)),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           if (icon != null) ...[Icon(icon, size: size + 3, color: fg), const SizedBox(width: 5)],
-          Text(text, style: ts(size, w: FontWeight.w600, c: fg)),
+          Text(text, style: ts(size, w: weight, c: fg)),
         ]),
       );
 }
@@ -192,6 +202,8 @@ class PickupDropCard extends StatelessWidget {
   final bool showLabels;
   final Color? pickupCircleColor;
   final Color? textColor;
+  final Color? color;
+  final Color? borderColor;
   const PickupDropCard(
       {super.key,
       required this.pickup,
@@ -200,7 +212,9 @@ class PickupDropCard extends StatelessWidget {
       this.onDropTap,
       this.showLabels = false,
       this.pickupCircleColor,
-      this.textColor});
+      this.textColor,
+      this.color,
+      this.borderColor});
 
   Widget _row(Widget bullet, String text, String label, VoidCallback? tap) => InkWell(
         onTap: tap,
@@ -221,6 +235,8 @@ class PickupDropCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => AppCard(
+        color: color ?? Colors.white,
+        borderColor: borderColor ?? AppColors.line,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(children: [
           _row(

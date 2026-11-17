@@ -14,13 +14,13 @@ class EnterMobileScreen extends StatefulWidget {
 }
 
 class _EnterMobileScreenState extends State<EnterMobileScreen> {
-  static const _codes = {
-    '+92': '🇵🇰 +92',
-    '+971': '🇦🇪 +971',
-    '+966': '🇸🇦 +966',
-    '+44': '🇬🇧 +44',
-    '+1': '🇺🇸 +1',
-  };
+  static const _codes = [
+    '+92',
+    '+971',
+    '+966',
+    '+44',
+    '+1',
+  ];
   String _code = '+92';
   final _ctrl = TextEditingController();
   bool _loading = false;
@@ -75,92 +75,124 @@ class _EnterMobileScreenState extends State<EnterMobileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isSmallScreen = screenWidth < 360 || screenHeight < 650;
+
+    final horizontalPadding = isSmallScreen ? 16.0 : 24.0;
+    final inputFontSize = screenWidth < 360 ? 19.0 : (screenWidth < 400 ? 21.0 : 22.0);
+    final inputLetterSpacing = screenWidth < 360 ? 0.6 : 1.0;
+    final inputHeight = isSmallScreen ? 58.0 : 62.0;
+
     return Scaffold(
       backgroundColor: AppColors.creamBg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-          child: Column(children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(color: AppColors.redSoft, borderRadius: BorderRadius.circular(18)),
-                    child: const Icon(Icons.phone_iphone_rounded, color: AppColors.red, size: 30),
-                  ),
-                  const SizedBox(height: 26),
-                  Text('Enter your\nmobile number', style: ts(36, w: FontWeight.w800, h: 1.15, ls: -.5)),
-                  const SizedBox(height: 34),
-                  Container(
-                    height: 68,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: AppColors.line, width: 1.5),
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Row(children: [
-                      Container(
-                        height: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        color: AppColors.lilacBg,
-                        child: Center(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _code,
-                              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                              style: ts(20, w: FontWeight.w700),
-                              dropdownColor: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              items: _codes.entries
-                                  .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-                                  .toList(),
-                              onChanged: (v) => setState(() => _code = v ?? '+92'),
-                            ),
-                          ),
-                        ),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(horizontalPadding, 16, horizontalPadding, 20),
+            child: Column(children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(
+                      width: isSmallScreen ? 68 : 80,
+                      height: isSmallScreen ? 68 : 80,
+                      decoration: BoxDecoration(
+                        color: AppColors.red,
+                        borderRadius: BorderRadius.circular(isSmallScreen ? 18 : 22),
                       ),
-                      Expanded(
-                        child: Container(
-                          height: double.infinity,
+                      child: Center(
+                        child: Icon(Icons.verified_user_outlined,
+                            color: Colors.white, size: isSmallScreen ? 38 : 45),
+                      ),
+                    ),
+                    SizedBox(height: isSmallScreen ? 20 : 26),
+                    Text('Enter your\nmobile number',
+                        style: ts(isSmallScreen ? 28 : 34, w: FontWeight.w800, h: 1.15, ls: -.5)),
+                    SizedBox(height: isSmallScreen ? 24 : 32),
+                    MediaQuery.withClampedTextScaling(
+                      maxScaleFactor: 1.2,
+                      child: Container(
+                        height: inputHeight,
+                        decoration: BoxDecoration(
                           color: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Center(
-                            child: TextField(
-                              controller: _ctrl,
-                              autofocus: true,
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(12),
-                              ],
-                              onChanged: (_) => setState(() {}),
-                              style: ts(28, w: FontWeight.w700, ls: 1.5),
-                              cursorColor: AppColors.red,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: '3001212211',
-                                hintStyle: ts(28, w: FontWeight.w600, c: const Color(0xFFD1D5DB), ls: 1.5),
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.line, width: 1.5),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Row(children: [
+                          Container(
+                            height: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            color: AppColors.lilacBg,
+                            child: Center(
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  value: _code,
+                                  icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                                      size: 18, color: AppColors.ink),
+                                  style: ts(16, w: FontWeight.w700, c: AppColors.ink),
+                                  dropdownColor: Colors.white,
+                                  borderRadius: BorderRadius.circular(14),
+                                  isDense: true,
+                                  items: _codes
+                                      .map((code) => DropdownMenuItem(
+                                            value: code,
+                                            child: Text(code,
+                                                style: ts(15, w: FontWeight.w600, c: AppColors.ink)),
+                                          ))
+                                      .toList(),
+                                  onChanged: (v) => setState(() => _code = v ?? '+92'),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14),
+                              child: TextField(
+                                controller: _ctrl,
+                                autofocus: true,
+                                keyboardType: TextInputType.phone,
+                                textAlignVertical: TextAlignVertical.center,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(12),
+                                ],
+                                onChanged: (_) => setState(() {}),
+                                style: ts(inputFontSize, w: FontWeight.w600, ls: inputLetterSpacing),
+                                cursorColor: AppColors.red,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: '3001212211',
+                                  hintStyle: ts(inputFontSize,
+                                      w: FontWeight.w500,
+                                      c: const Color(0xFFD1D5DB),
+                                      ls: inputLetterSpacing),
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
                       ),
-                    ]),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    "We'll send a ${AppConfig.otpLength}-digit code by SMS. Safro is for women aged 18 and over.",
-                    style: ts(14, c: AppColors.grey, h: 1.5),
-                  ),
-                ]),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      "We'll send a ${AppConfig.otpLength}-digit code by SMS. Safro is for women aged 18 and over.",
+                      style: ts(14, c: AppColors.grey, h: 1.5),
+                    ),
+                  ]),
+                ),
               ),
-            ),
-            PrimaryButton(label: 'Send code', loading: _loading, onPressed: _valid ? _send : null),
-          ]),
+              PrimaryButton(label: 'Send code', loading: _loading, onPressed: _valid ? _send : null),
+            ]),
+          ),
         ),
       ),
     );

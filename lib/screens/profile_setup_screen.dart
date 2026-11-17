@@ -14,7 +14,7 @@ class ProfileSetupScreen extends StatefulWidget {
 
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _name = TextEditingController();
-  bool _ok = false;
+  // bool _ok = false;
   bool _saving = false;
 
   Future<void> _save() async {
@@ -37,7 +37,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final can = _name.text.trim().length >= 2 && _ok;
+    final can = _name.text.trim().length >= 2;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -64,24 +64,24 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           borderSide: const BorderSide(color: AppColors.red, width: 2)),
                     ),
                   ),
-                  const SizedBox(height: 22),
-                  InkWell(
-                    onTap: () => setState(() => _ok = !_ok),
-                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Checkbox(
-                          value: _ok,
-                          activeColor: AppColors.red,
-                          onChanged: (v) => setState(() => _ok = v ?? false)),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Text(
-                              'I am a woman aged 18 or over, and I accept the Terms and Privacy Policy.',
-                              style: ts(13.5, c: AppColors.grey, h: 1.45)),
-                        ),
-                      ),
-                    ]),
-                  ),
+                  // const SizedBox(height: 22),
+                  // InkWell(
+                  //   onTap: () => setState(() => _ok = !_ok),
+                  //   child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  //     Checkbox(
+                  //         value: _ok,
+                  //         activeColor: AppColors.red,
+                  //         onChanged: (v) => setState(() => _ok = v ?? false)),
+                  //     Expanded(
+                  //       child: Padding(
+                  //         padding: const EdgeInsets.only(top: 12),
+                  //         child: Text(
+                  //             'I am a woman aged 18 or over, and I accept the Terms and Privacy Policy.',
+                  //             style: ts(13.5, c: AppColors.grey, h: 1.45)),
+                  //       ),
+                  //     ),
+                  //   ]),
+                  // ),
                 ]),
               ),
             ),

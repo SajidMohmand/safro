@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/theme.dart';
 import '../models/models.dart';
 import 'home_tab.dart';
 import 'plans_tab.dart';
@@ -27,24 +28,32 @@ class MainShell extends StatelessWidget {
           ]),
           bottomNavigationBar: NavigationBar(
             selectedIndex: index,
-            height: 68,
+            height: 70,
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            indicatorColor: Colors.transparent,
             onDestinationSelected: (i) => AppNav.tab.value = i,
             destinations: const [
               NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded, color: Color(0xFFCA4E3D)),
+                  icon: Icon(Icons.home_outlined, size: 26),
+                  selectedIcon: Icon(Icons.home_rounded, color: AppColors.navSelected, size: 26),
                   label: 'Home'),
               NavigationDestination(
-                  icon: Icon(Icons.receipt_long_outlined),
-                  selectedIcon: Icon(Icons.receipt_long_rounded, color: Color(0xFFCA4E3D)),
+                  icon: Icon(Icons.access_time_rounded, size: 26),
+                  selectedIcon: Icon(Icons.access_time_filled, color: AppColors.navSelected, size: 26),
                   label: 'Trips'),
               NavigationDestination(
-                  icon: Icon(Icons.calendar_month_outlined),
-                  selectedIcon: Icon(Icons.calendar_month_rounded, color: Color(0xFFCA4E3D)),
-                  label: 'Plans'),
+                icon: Icon(Icons.calendar_today_outlined, size: 26),
+                selectedIcon: Icon(
+                  Icons.calendar_today,
+                  color: AppColors.navSelected,
+                  size: 26,
+                ),
+                label: 'Plans',
+              ),
               NavigationDestination(
-                  icon: Icon(Icons.shield_outlined),
-                  selectedIcon: Icon(Icons.shield_rounded, color: Color(0xFFCA4E3D)),
+                  icon: Icon(Icons.verified_user_outlined, size: 26),
+                  selectedIcon: Icon(Icons.verified_user, color: AppColors.navSelected, size: 26),
                   label: 'Safety'),
             ],
           ),

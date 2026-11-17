@@ -101,40 +101,52 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  Widget _box(int i, double w) {
+  Widget _box(int i, double w, double h) {
     final filled = i < _code.length;
     final active = i == _code.length;
     return Container(
       width: w,
-      height: 74,
+      height: h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: active
               ? AppColors.verifyRed
               : (filled ? AppColors.verifyRed.withOpacity(.5) : AppColors.line),
-          width: active ? 2.2 : 1.6,
+          width: active ? 2.0 : 1.5,
         ),
       ),
       child: Text(
         filled ? _code[i] : '',
-        style: ts(_len <= 4 ? 36 : 28, w: FontWeight.w800, c: AppColors.numberDark),
+        style: ts(24, w: FontWeight.w700, c: AppColors.numberDark),
       ),
     );
   }
 
-  Widget _padKey(String label, {IconData? icon, required VoidCallback? onTap}) => Expanded(
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          child: SizedBox(
-            height: 58,
-            child: Center(
-              child: icon != null
-                  ? Icon(icon, size: 28, color: AppColors.numberDark)
-                  : Text(label, style: ts(28, w: FontWeight.w600, c: AppColors.numberDark)),
+  Widget _padKey(String label,
+          {IconData? icon, required VoidCallback? onTap, required double height}) =>
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+          child: Material(
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: const BorderSide(color: AppColors.line, width: 1.5),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onTap,
+              child: SizedBox(
+                height: height,
+                child: Center(
+                  child: icon != null
+                      ? Icon(icon, size: 24, color: AppColors.numberDark)
+                      : Text(label, style: ts(24, w: FontWeight.w700, c: AppColors.numberDark)),
+                ),
+              ),
             ),
           ),
         ),
@@ -142,61 +154,110 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-    const gap = 10.0;
-    final boxW = (w - 48 - gap * (_len - 1)) / _len;
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final isSmallScreen = screenHeight < 680 || screenWidth < 360;
+
+    final horizontalPadding = isSmallScreen ? 16.0 : 24.0;
+    final gap = isSmallScreen ? 8.0 : 10.0;
+    final availableWidth = screenWidth - (horizontalPadding * 2);
+    final boxW = (availableWidth - (gap * (_len - 1))) / _len;
+    final boxH = isSmallScreen ? 56.0 : 64.0;
+    final keyHeight = isSmallScreen ? 48.0 : 54.0;
+
     final rows = [
       ['1', '2', '3'],
       ['4', '5', '6'],
       ['7', '8', '9'],
     ];
+
     return Scaffold(
       backgroundColor: AppColors.creamBg,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            IconButton(
-              padding: EdgeInsets.zero,
-              alignment: Alignment.centerLeft,
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24, color: AppColors.numberDark),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            const SizedBox(height: 10),
-            Text('Enter the code', style: ts(36, w: FontWeight.w800, ls: -.5, c: AppColors.numberDark)),
-            const SizedBox(height: 10),
-            Text.rich(TextSpan(style: ts(15, c: AppColors.grey), children: [
-              const TextSpan(text: 'Sent to '),
-              TextSpan(text: widget.display, style: ts(15, w: FontWeight.w700, c: AppColors.numberDark)),
-            ])),
-            const SizedBox(height: 28),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              for (var i = 0; i < _len; i++) _box(i, boxW),
-            ]),
-            const SizedBox(height: 22),
-            Center(
-              child: _secs > 0
-                  ? Text('Resend code in 0:${_secs.toString().padLeft(2, '0')}', style: ts(14, c: AppColors.grey))
-                  : TextButton(
-                      onPressed: _resend,
-                      child: Text('Resend code', style: ts(15, w: FontWeight.w700, c: AppColors.verifyRed))),
-            ),
-            const Spacer(),
-            for (final r in rows)
-              Row(children: [for (final k in r) _padKey(k, onTap: () => _key(k))]),
-            Row(children: [
-              const Expanded(child: SizedBox(height: 58)),
-              _padKey('0', onTap: () => _key('0')),
-              _padKey('', icon: Icons.backspace_outlined, onTap: () => _key('del')),
-            ]),
-            const SizedBox(height: 14),
-            PrimaryButton(
-              label: 'Verify',
-              color: AppColors.verifyRed,
-              loading: _loading,
-              onPressed: _code.length == _len ? _verify : null,
-            ),
-          ]),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          alignment: Alignment.centerLeft,
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                              size: 24, color: AppColors.numberDark),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        SizedBox(height: isSmallScreen ? 6 : 10),
+                        Text('Enter the code',
+                            style: ts(isSmallScreen ? 30 : 36,
+                                w: FontWeight.w800, ls: -.5, c: AppColors.numberDark)),
+                        const SizedBox(height: 8),
+                        Text.rich(TextSpan(style: ts(15, c: AppColors.grey), children: [
+                          const TextSpan(text: 'Sent to '),
+                          TextSpan(
+                              text: widget.display,
+                              style: ts(15, w: FontWeight.w700, c: AppColors.numberDark)),
+                        ])),
+                        SizedBox(height: isSmallScreen ? 20 : 28),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (var i = 0; i < _len; i++) ...[
+                              _box(i, boxW, boxH),
+                              if (i < _len - 1) SizedBox(width: gap),
+                            ],
+                          ],
+                        ),
+                        SizedBox(height: isSmallScreen ? 16 : 22),
+                        Center(
+                          child: _secs > 0
+                              ? Text('Resend code in 0:${_secs.toString().padLeft(2, '0')}',
+                                  style: ts(14, c: AppColors.grey))
+                              : TextButton(
+                                  onPressed: _resend,
+                                  child: Text('Resend code',
+                                      style: ts(15, w: FontWeight.w700, c: AppColors.verifyRed))),
+                        ),
+                        const Spacer(),
+                        for (final r in rows)
+                          Row(children: [
+                            for (final k in r)
+                              _padKey(k, height: keyHeight, onTap: () => _key(k)),
+                          ]),
+                        Row(children: [
+                          const Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                              child: SizedBox(),
+                            ),
+                          ),
+                          _padKey('0', height: keyHeight, onTap: () => _key('0')),
+                          _padKey('',
+                              height: keyHeight,
+                              icon: Icons.backspace_outlined,
+                              onTap: () => _key('del')),
+                        ]),
+                        SizedBox(height: isSmallScreen ? 10 : 14),
+                        PrimaryButton(
+                          label: 'Verify',
+                          color: AppColors.verifyRed,
+                          loading: _loading,
+                          onPressed: _code.length == _len ? _verify : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

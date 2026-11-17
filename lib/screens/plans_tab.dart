@@ -141,7 +141,7 @@ class _PlansTabState extends State<PlansTab> {
           const SheetHandle(),
           for (final d in _drivers)
             ListTile(
-              leading: Avatar(d.name),
+              leading: Avatar(d.name, border: AppColors.green),
               title: Text(d.name, style: ts(16, w: FontWeight.w700, c: AppColors.planTextDark)),
               subtitle: Text('${d.rating} • ${d.trips} trips • ${d.car}', style: ts(12.5, c: AppColors.grey)),
               onTap: () => Navigator.pop(context, d),
@@ -170,107 +170,154 @@ class _PlansTabState extends State<PlansTab> {
     final name = _driver?.name ?? '...';
     final time = TimeOfDay(hour: _minutes ~/ 60, minute: _minutes % 60).format(context);
     return SafeArea(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        children: [
-          Text('Meri Driver', style: ts(30, w: FontWeight.w800, ls: -.5, c: AppColors.planTextDark)),
-          const SizedBox(height: 18),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Meri Driver',
+                          style: ts(32, w: FontWeight.w800, ls: -.5, c: AppColors.planTextDark)),
+                      const SizedBox(height: 16),
 
-          // Fixed driver
-          AppCard(
-            onTap: _pickDriver,
-            color: AppColors.planCardDark,
-            borderColor: Colors.transparent,
-            child: Row(children: [
-              Avatar(name, size: 54, bg: Colors.white, fg: AppColors.planCardDark),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(name, style: ts(18, w: FontWeight.w700, c: Colors.white)),
-                  Text('Your fixed driver', style: ts(13, c: Colors.white.withOpacity(0.75))),
-                ]),
-              ),
-              if (!_active) const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white70),
-            ]),
-          ),
-          const SizedBox(height: 14),
-
-          // Route
-          PickupDropCard(
-            pickup: _pickup.name,
-            drop: _drop.name,
-            onPickupTap: () => _pickPlace(true),
-            onDropTap: () => _pickPlace(false),
-            pickupCircleColor: AppColors.planCardDark,
-            textColor: AppColors.planTextDark,
-          ),
-          const SizedBox(height: 14),
-
-          // Days + time
-          AppCard(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Days', style: ts(15, w: FontWeight.w700, c: AppColors.planTextDark)),
-              const SizedBox(height: 12),
-              Row(children: [
-                for (var i = 0; i < 7; i++)
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: _active
-                          ? null
-                          : () => setState(() => _days.contains(i) ? _days.remove(i) : _days.add(i)),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 160),
-                        height: 44,
-                        margin: const EdgeInsets.symmetric(horizontal: 2.5),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: _days.contains(i) ? AppColors.planSelectedDay : AppColors.planUnselectedDay,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: _days.contains(i) ? AppColors.planSelectedDay : Colors.transparent,
-                              width: 1.4),
-                        ),
-                        child: Text(_dayNames[i],
-                            style: ts(11.5,
-                                w: FontWeight.w700,
-                                c: _days.contains(i) ? Colors.white : AppColors.planTextDark)),
+                      // Fixed driver
+                      AppCard(
+                        onTap: _pickDriver,
+                        color: AppColors.planCardDark,
+                        borderColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                        child: Row(children: [
+                          Avatar(name,
+                              size: 58,
+                              bg: Colors.white,
+                              fg: AppColors.planCardDark,
+                              border: AppColors.green,
+                              borderWidth: 2.5),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Text(name, style: ts(19, w: FontWeight.w700, c: Colors.white)),
+                              const SizedBox(height: 2),
+                              Text('Your fixed driver',
+                                  style: ts(13.5, c: Colors.white.withOpacity(0.8))),
+                            ]),
+                          ),
+                          if (!_active)
+                            const Icon(Icons.keyboard_arrow_down_rounded,
+                                color: Colors.white70, size: 24),
+                        ]),
                       ),
-                    ),
-                  ),
-              ]),
-              const SizedBox(height: 20),
-              Text('Pickup time', style: ts(15, w: FontWeight.w700, c: AppColors.grey)),
-              const SizedBox(height: 10),
-              Row(children: [
-                _circleBtn(Icons.remove_rounded, () => _step(-15)),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _pickTime,
-                    child: Center(child: Text(time, style: ts(30, w: FontWeight.w800, c: AppColors.planTextDark))),
+                      const SizedBox(height: 14),
+
+                      // Route
+                      PickupDropCard(
+                        pickup: _pickup.name,
+                        drop: _drop.name,
+                        onPickupTap: () => _pickPlace(true),
+                        onDropTap: () => _pickPlace(false),
+                        pickupCircleColor: AppColors.planCardDark,
+                        textColor: AppColors.planTextDark,
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Days + time
+                      AppCard(
+                        padding: const EdgeInsets.all(18),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('Days', style: ts(16, w: FontWeight.w700, c: AppColors.planTextDark)),
+                          const SizedBox(height: 12),
+                          Row(children: [
+                            for (var i = 0; i < 7; i++)
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: _active
+                                      ? null
+                                      : () => setState(() =>
+                                          _days.contains(i) ? _days.remove(i) : _days.add(i)),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 160),
+                                    height: 48,
+                                    margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: _days.contains(i)
+                                          ? AppColors.planSelectedDay
+                                          : AppColors.planUnselectedDay,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: _days.contains(i)
+                                              ? AppColors.planSelectedDay
+                                              : Colors.transparent,
+                                          width: 1.4),
+                                    ),
+                                    child: Text(_dayNames[i],
+                                        style: ts(12.5,
+                                            w: FontWeight.w700,
+                                            c: _days.contains(i)
+                                                ? Colors.white
+                                                : AppColors.planTextDark)),
+                                  ),
+                                ),
+                              ),
+                          ]),
+                          const SizedBox(height: 22),
+                          Text('Pickup time', style: ts(16, w: FontWeight.w700, c: AppColors.grey)),
+                          const SizedBox(height: 12),
+                          Row(children: [
+                            _circleBtn(Icons.remove_rounded, () => _step(-15)),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: _pickTime,
+                                child: Center(
+                                    child: Text(time,
+                                        style: ts(32,
+                                            w: FontWeight.w800, c: AppColors.planTextDark))),
+                              ),
+                            ),
+                            _circleBtn(Icons.add_rounded, () => _step(15)),
+                          ]),
+                        ]),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Price
+                      AppCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        child: Row(children: [
+                          Expanded(
+                              child: Text('Per month paid in\nadvance',
+                                  style: ts(16,
+                                      w: FontWeight.w600, h: 1.35, c: AppColors.planTextDark))),
+                          Text('PKR\n${money(_price)}',
+                              textAlign: TextAlign.right,
+                              style: ts(22,
+                                  w: FontWeight.w800, h: 1.2, c: AppColors.planTextDark)),
+                        ]),
+                      ),
+                      const SizedBox(height: 16),
+
+                      const Spacer(),
+                      const SizedBox(height: 8),
+
+                      PrimaryButton(
+                        label: _active ? 'Plan active' : 'Start plan',
+                        color: _active ? AppColors.planActiveBtn : AppColors.red,
+                        loading: _saving,
+                        onPressed: _driver == null ? null : _toggle,
+                      ),
+                    ],
                   ),
                 ),
-                _circleBtn(Icons.add_rounded, () => _step(15)),
-              ]),
-            ]),
-          ),
-          const SizedBox(height: 14),
-
-          // Price
-          AppCard(
-            child: Row(children: [
-              Expanded(child: Text('Per month paid in\nadvance', style: ts(15, w: FontWeight.w600, h: 1.35, c: AppColors.planTextDark))),
-              Text('PKR\n${money(_price)}', textAlign: TextAlign.right, style: ts(20, w: FontWeight.w800, h: 1.2, c: AppColors.planTextDark)),
-            ]),
-          ),
-          const SizedBox(height: 22),
-
-          PrimaryButton(
-            label: _active ? 'Plan active' : 'Start plan',
-            color: _active ? AppColors.planActiveBtn : AppColors.red,
-            loading: _saving,
-            onPressed: _driver == null ? null : _toggle,
-          ),
-        ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -279,10 +326,11 @@ class _PlansTabState extends State<PlansTab> {
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.line, width: 1.6)),
-          child: Icon(i, size: 24, color: AppColors.planTextDark),
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle, border: Border.all(color: AppColors.line, width: 1.6)),
+          child: Icon(i, size: 26, color: AppColors.planTextDark),
         ),
       );
 }

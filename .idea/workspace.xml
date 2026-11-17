@@ -10,16 +10,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33b3030e-b053-4dd9-baf8-15ae53bb8428" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Flutter/Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/Debug.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Flutter/Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Flutter/Release.xcconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/book_ride_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/book_ride_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/enter_mobile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/enter_mobile_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/home_tab.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/home_tab.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/main_shell.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/main_shell.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/otp_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/otp_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/plans_tab.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/plans_tab.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/profile_setup_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/profile_setup_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/rating_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/rating_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/safety_tab.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/safety_tab.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/sos_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/sos_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/screens/splash_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/splash_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/screens/trips_tab.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/trips_tab.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/screens/trip_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/screens/trip_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/widgets/common.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/widgets/common.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/safro.iml" beforeDir="false" afterPath="$PROJECT_DIR$/safro.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +70,7 @@
     &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/apple/Working/mobile_apps/safro&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>

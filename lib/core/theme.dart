@@ -29,6 +29,8 @@ class AppColors {
   static const planUnselectedDay = Color(0xFFF2E9F7);
   static const planActiveBtn = Color(0xFF117770);
   static const tripsTextDark = Color(0xFF211527);
+  static const selectCarBg = Color(0xFFFCF7F6);
+  static const pickupDropBg = Color(0xFFEFE9F4);
 }
 
 TextStyle ts(double size,
@@ -56,18 +58,18 @@ class AppTheme {
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        indicatorColor: AppColors.navSelected.withOpacity(0.12),
+        indicatorColor: Colors.transparent,
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: AppColors.navSelected);
+            return const IconThemeData(color: AppColors.navSelected, size: 26);
           }
-          return const IconThemeData(color: AppColors.grey);
+          return const IconThemeData(color: AppColors.grey, size: 26);
         }),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return ts(12, w: FontWeight.w700, c: AppColors.navSelected);
+            return ts(13.5, w: FontWeight.w700, c: AppColors.navSelected);
           }
-          return ts(12, w: FontWeight.w600, c: AppColors.grey);
+          return ts(13.5, w: FontWeight.w600, c: AppColors.grey);
         }),
       ),
     );
