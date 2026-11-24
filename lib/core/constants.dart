@@ -21,7 +21,7 @@ class AppConfig {
 
   /// Simulates the driver side so the full ride cycle can be tested without
   /// a driver app. Set to false once a real driver app updates trip docs.
-  static const simulateDriver = true;
+  static const simulateDriver = false;
 
   static const sosHoldSeconds = 3;
 }

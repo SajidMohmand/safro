@@ -249,6 +249,41 @@ class Db {
     });
     return number;
   }
+
+  // ---------- driver reviews ----------
+  static Future<void> recordDriverReview({
+    required String driverId,
+    required int rating,
+    required List<String> tags,
+  }) async {
+    try {
+      final docRef = _f.collection('drivers').doc(driverId);
+      final snap = await docRef.get();
+      if (snap.exists) {
+        final data = snap.data() ?? {};
+        final curRating = ((data['rating'] ?? 4.9) as num).toDouble();
+        final curTrips = ((data['trips'] ?? 0) as num).toInt();
+        final newTrips = curTrips + 1;
+        final newRating = double.parse((((curRating * curTrips) + rating) / newTrips).toStringAsFixed(2));
+
+        await docRef.set({
+          'rating': newRating,
+          'trips': newTrips,
+          'lastRating': rating,
+          'lastTags': tags,
+          'lastRatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      } else {
+        await docRef.set({
+          'rating': rating.toDouble(),
+          'trips': 1,
+          'lastRating': rating,
+          'lastTags': tags,
+          'lastRatedAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
+    } catch (_) {}
+  }
 }
 
 class DriverRepo {

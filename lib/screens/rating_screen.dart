@@ -25,6 +25,14 @@ class _RatingScreenState extends State<RatingScreen> {
         'tags': _tags.toList(),
         'ratedAt': DateTime.now().toIso8601String(),
       }).timeout(const Duration(seconds: 8));
+
+      if (widget.trip.driver != null && widget.trip.driver!.id.isNotEmpty) {
+        await Db.recordDriverReview(
+          driverId: widget.trip.driver!.id,
+          rating: _stars,
+          tags: _tags.toList(),
+        );
+      }
     } catch (_) {}
     if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
   }
